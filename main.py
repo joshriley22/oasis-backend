@@ -1,53 +1,72 @@
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-import requests
+import re
+from google import genai
 
 app = FastAPI()
 
-# Read your Gemini API key from environment
-API_KEY = os.getenv("GEMINI_API_KEY")
-if not API_KEY:
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") # Loads API key from Railway
+if not GEMINI_API_KEY:
     raise RuntimeError("GEMINI_API_KEY environment variable not set!")
 
-# Allow your frontend to call this API
-origins = [
-    "*"  # For testing only; replace with your frontend URL in production
-]
+client = genai.Client(api_key=GEMINI_API_KEY)
 
+# Allows the frontend to call the Backend
+# * is used for testing; change to frontend URL
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Example root route
+
+
+# Root Route
 @app.get("/")
 def read_root():
     return {"message": "Hello from FastAPI!"}
 
-# Route that calls Gemini API securely
-@app.get("/gemini/ticker")
-def get_gemini_ticker():
-    url = "https://api.gemini.com/v1/pubticker/btcusd"  # Example public endpoint
-    headers = {"X-GEMINI-APIKEY": API_KEY}  # Private endpoints require this
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    return response.json()
 
 # Route for your frontend/extension to send data
-@app.post("/process")
-def process_data(data: dict):
-    # Do something with the data
-    return {"received": data}
+@app.post("/analyze")
+def analyze_product(data: dict):
+    product_name = data.get("name")
+    if not product_name:
+        return {"error": "No Product Provided"}
+
+    prompt = f"""
+        Product: {product_name}
+
+        Rate this product's sustainability score on a scale from 0-100.
+        Only return:
+        Score: <number>
+        Reason: <short explanation>
+        """
+
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",  # ⚡ fast + cheap (best for hackathon)
+            contents=prompt
+        )
+        text = response.text
+        match = re.search(r"Score:\s*(\d+)", text)
+        score = int(match.group(1)) if match else None
+        return {
+            "name": product_name,
+            "score": score,
+            "analysis": text
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
 
 # Main method for Railway
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # Railway provides the port
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
+    port = int(os.environ.get("PORT", 8000))  # lets Railway provide the port
+    # uses FastAPI app "app" hosted on 0.0.0.0 using Railways port, reloading to check for changes for easier development
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
