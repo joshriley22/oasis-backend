@@ -13,3 +13,9 @@ Thumbs.db
 
 # PyCharm IDE files
 .idea/
+
+.env
+
+*.log
+__pycache__/
+.cache/
