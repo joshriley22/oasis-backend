@@ -36,6 +36,7 @@ def read_root():
 @app.post("/analyze")
 def analyze_product(data: dict):
     product_name = data.get("name")
+    print(product_name)
     if not product_name:
         return {"error": "No Product Provided"}
 
@@ -60,6 +61,7 @@ def analyze_product(data: dict):
             "name": product_name,
             "score": score,
             "analysis": text
+
         }
 
     except Exception as e:
