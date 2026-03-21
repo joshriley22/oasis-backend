@@ -6,7 +6,7 @@ import re
 from google import genai
 
 app = FastAPI()
-
+cache = {}
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") # Loads API key from Railway
 if not GEMINI_API_KEY:
@@ -35,17 +35,21 @@ def read_root():
 # Route for your frontend/extension to send data
 @app.post("/analyze")
 def analyze_product(data: dict):
-    product_name = data.get("name")
-    print(product_name)
+    product_name = data.get("product")
     if not product_name:
-        return {"error": "No Product Provided"}
-
+        return {"error": "No product provided"}
+    product_name = product_name.lower().strip()
+    print(product_name)
+    if product_name in cache:
+        print("Cache hit")
+        return cache[product_name]
+    print("Cache miss")
     prompt = f"""
         Product: {product_name}
 
         Rate this product's sustainability score on a scale from 0-100.
         Only return:
-        Score: <number>
+        Score: <number from 0 to 100>
         Reason: <short explanation>
         """
 
@@ -55,15 +59,23 @@ def analyze_product(data: dict):
             contents=prompt
         )
         text = response.text
-        match = re.search(r"Score:\s*(\d+)", text)
-        score = int(match.group(1)) if match else None
-        return {
+        if not text:
+            return {"error": "Empty response from Gemini"}
+        match = re.search(r"Score:\s*(\d+)", text) or re.search(r"\d+", text)
+        if match:
+            score = int(match.group(1)) if match.lastindex else int(match.group(0))
+        else:
+            score = None
+
+        if score is not None:
+            score = max(0, min(score, 100))
+        result = {
             "name": product_name,
             "score": score,
             "analysis": text
-
         }
-
+        cache[product_name] = result
+        return result
     except Exception as e:
         return {"error": str(e)}
 
@@ -71,4 +83,4 @@ def analyze_product(data: dict):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))  # lets Railway provide the port
     # uses FastAPI app "app" hosted on 0.0.0.0 using Railways port, reloading to check for changes for easier development
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
