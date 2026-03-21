@@ -36,6 +36,7 @@ def read_root():
 @app.post("/analyze")
 def analyze_product(data: dict):
     product_name = data.get("product")
+    print(product_name)
     if not product_name:
         return {"error": "No product provided"}
     product_name = product_name.lower().strip()
