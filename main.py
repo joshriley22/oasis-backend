@@ -62,7 +62,7 @@ def analyze_product(data: dict):
         - Carbon footprint of production and transport
         - Packaging sustainability
         - Reusability or recyclability
-        Also include a url to a more eco-friendly alternative product on the same website.
+        Also include the name of a more eco-friendly alternative product.
         
         Scoring guidelines:
         - 0–30: harmful to environment
@@ -73,7 +73,7 @@ def analyze_product(data: dict):
         Respond in EXACT format:
         Score: <number from 0 to 100>
         Reason: <1-3 sentence explanation>
-        Alternative: <url to more eco-friendly alternative product on the same website>
+        Alternative: <eco-friendly alternative product>
         """
 
     try:
