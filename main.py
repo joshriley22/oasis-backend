@@ -7,7 +7,7 @@ from google import genai
 
 app = FastAPI()
 cache = {}
-
+print("App file imported successfully", flush=True)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") # Loads API key from Railway
 if not GEMINI_API_KEY:
     raise RuntimeError("GEMINI_API_KEY environment variable not set!")
@@ -80,7 +80,7 @@ def analyze_product(data: dict):
     except Exception as e:
         return {"error": str(e)}
 
-# Main method for Railway
+# Runs file locally
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))  # lets Railway provide the port
     # uses FastAPI app "app" hosted on 0.0.0.0 using Railways port, reloading to check for changes for easier development
