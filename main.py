@@ -62,17 +62,18 @@ def analyze_product(data: dict):
         - Carbon footprint of production and transport
         - Packaging sustainability
         - Reusability or recyclability
+        Also include url to more eco-friendly alternative product.
         
         Scoring guidelines:
-        - 0–30: Very harmful to environment
-        - 31–60: Moderately harmful
-        - 61–80: Somewhat sustainable
-        - 81–100: Highly sustainable
+        - 0–30: harmful to environment
+        - 33–67: slightly harmful to environment
+        - 67–100: Highly sustainable
         
         
         Respond in EXACT format:
         Score: <number from 0 to 100>
-        Reason: <short explanation>
+        Reason: <1-3 sentence explanation>
+        Alternative: <url to more eco-friendly alternative product>
         """
 
     try:
@@ -94,7 +95,8 @@ def analyze_product(data: dict):
         result = {
             "name": product_name,
             "score": score,
-            "analysis": text
+            "analysis": text,
+            "link": text
         }
         cache[product_name] = result
         return result
