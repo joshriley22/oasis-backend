@@ -1,4 +1,5 @@
-
+import sys
+print(f"Python version: {sys.version}", flush=True)
 print("Starting backend...", flush=True)
 import os
 from fastapi import FastAPI
@@ -91,4 +92,4 @@ print("analyize set", flush=True)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))  # lets Railway provide the port
     # uses FastAPI app "app" hosted on 0.0.0.0 using Railways port, reloading to check for changes for easier development
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload = False)
