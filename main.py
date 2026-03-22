@@ -1,3 +1,5 @@
+
+print("Starting backend...", flush=True)
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
