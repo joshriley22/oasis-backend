@@ -3,8 +3,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import re
+rint("Before import", flush=True)
 from google import genai
-
+print("After import", flush=True)
 app = FastAPI()
 cache = {}
 print("App file imported successfully", flush=True)
