@@ -60,6 +60,7 @@ def analyze_product(data: dict):
         Only return:
         Score: <number from 0 to 100>
         Reason: <short explanation>
+        Alternative: <url to more eco-friendly alternative product>
         """
 
     try:
@@ -81,7 +82,8 @@ def analyze_product(data: dict):
         result = {
             "name": product_name,
             "score": score,
-            "analysis": text
+            "analysis": text,
+            "link": text
         }
         cache[product_name] = result
         return result
