@@ -14,8 +14,9 @@ print("App file imported successfully", flush=True)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") # Loads API key from Railway
 if not GEMINI_API_KEY:
     raise RuntimeError("GEMINI_API_KEY environment variable not set!")
-
+print("Gemini key set", flush=True)
 client = genai.Client(api_key=GEMINI_API_KEY)
+print("client set", flush=True)
 
 # Allows the frontend to call the Backend
 # * is used for testing; change to frontend URL
@@ -26,13 +27,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+print("middleware set", flush=True)
 
 
 
 # Root Route
 @app.get("/")
 def read_root():
+    print("root ran", flush=True)
     return {"message": "Hello from FastAPI!"}
+print("root set", flush=True)
 
 
 # Route for your frontend/extension to send data
@@ -82,7 +86,7 @@ def analyze_product(data: dict):
         return result
     except Exception as e:
         return {"error": str(e)}
-
+print("analyize set", flush=True)
 # Runs file locally
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))  # lets Railway provide the port
