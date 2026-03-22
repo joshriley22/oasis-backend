@@ -54,10 +54,23 @@ def analyze_product(data: dict):
         return cache[product_name]
     print("Cache miss")
     prompt = f"""
+        You are an expert in environmental sustainability.
+        Evaluate the sustainability of the following product:
         Product: {product_name}
-
-        Rate this product's sustainability score on a scale from 0-100.
-        Only return:
+        Score the product from 0 to 100 based on:
+        - Environmental impact of materials
+        - Carbon footprint of production and transport
+        - Packaging sustainability
+        - Reusability or recyclability
+        
+        Scoring guidelines:
+        - 0–30: Very harmful to environment
+        - 31–60: Moderately harmful
+        - 61–80: Somewhat sustainable
+        - 81–100: Highly sustainable
+        
+        
+        Respond in EXACT format:
         Score: <number from 0 to 100>
         Reason: <short explanation>
         """
